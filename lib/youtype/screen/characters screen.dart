@@ -15,24 +15,129 @@ class CharactersScreen extends StatefulWidget {
 
 class _CharactersScreenState extends State<CharactersScreen> {
   late List<Character> allCharacters;
+  late List<Character> searchCharacters;
+  bool isSearch = false;
+  late TextEditingController searchTextController;
 
   @override
   void initState() {
     super.initState();
     BlocProvider.of<CubitApp>(context).getAllCharacterss();
+    searchTextController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    searchTextController.dispose();
+    super.dispose();
+  }
+
+  Widget builtAppBarSearchFiled() {
+    return TextField(
+      controller: searchTextController,
+      cursorColor: MyColors.grey,
+      style: const TextStyle(
+        color: MyColors.grey,
+        fontSize: 16,
+      ),
+      onChanged: (String text) {
+        setState(() {
+          addSearchedForItemToSearchedList(text.toLowerCase());
+        });
+      },
+      decoration: const InputDecoration(
+        hintText: 'find to characters',
+        hintStyle: TextStyle(
+          color: MyColors.grey,
+          fontSize: 16,
+        ),
+        border: InputBorder.none,
+      ),
+    );
+  }
+
+  List<Widget> _builtAppBarAction() {
+    if (isSearch) {
+      return [
+        IconButton(
+          onPressed: () {
+            clearSearch();
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.clear,
+            color: MyColors.grey,
+          ),
+        ),
+      ];
+    } else {
+      return [
+        IconButton(
+          onPressed: () {
+            ModalRoute.of(context)!
+                .addLocalHistoryEntry(LocalHistoryEntry(onRemove: stopSearch));
+            setState(() {
+              isSearch = true;
+            });
+          },
+          icon: const Icon(
+            Icons.search,
+            color: MyColors.grey,
+          ),
+        ),
+      ];
+    }
+  }
+
+  void stopSearch() {
+    clearSearch();
+    setState(() {
+      isSearch = false;
+    });
+  }
+
+  void clearSearch() {
+    setState(() {
+      searchTextController.clear();
+    });
+  }
+
+// اضافة العناصر التي يبحث عنها في قائمة اخري
+  void addSearchedForItemToSearchedList(String text) {
+    searchCharacters = allCharacters
+        .where((character) => character.name.toLowerCase().startsWith(text))
+        .toList();
+  }
+
+  Widget builtAppBarTitle() {
+    return const Text(
+      'Characters',
+      style: TextStyle(
+        color: MyColors.grey,
+        fontSize: 16,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CubitApp, StatesApp>(
-      builder: (context, state) {
-        if (state is CharactersLoaded) {
-          allCharacters = state.listCharacters;
-          return listCharacters();
-        } else {
-          return showLoadingIndicator();
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: MyColors.yellow,
+        centerTitle: true,
+        title: isSearch ? builtAppBarSearchFiled() : builtAppBarTitle(),
+        actions: _builtAppBarAction(),
+      ),
+      body: BlocBuilder<CubitApp, StatesApp>(
+        builder: (context, state) {
+          if (state is CharactersLoaded) {
+            allCharacters = state.listCharacters;
+            return listCharacters();
+          } else {
+            return showLoadingIndicator();
+          }
+        },
+      ),
     );
   }
 
@@ -45,7 +150,9 @@ class _CharactersScreenState extends State<CharactersScreen> {
             GridView.builder(
               physics: const ClampingScrollPhysics(),
               shrinkWrap: true,
-              itemCount: allCharacters.length,
+              itemCount: searchTextController.text.isEmpty
+                  ? allCharacters.length
+                  : searchCharacters.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 1,
@@ -54,7 +161,9 @@ class _CharactersScreenState extends State<CharactersScreen> {
               ),
               itemBuilder: (context, index) {
                 return CharactersItem(
-                  character: allCharacters[index],
+                  character: searchTextController.text.isEmpty
+                      ? allCharacters[index]
+                      : searchCharacters[index],
                 );
               },
             )

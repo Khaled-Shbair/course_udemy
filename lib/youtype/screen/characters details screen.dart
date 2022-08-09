@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+
+import '../models/characters.dart';
+
 class CharactersDetailsScreen extends StatefulWidget {
-  const CharactersDetailsScreen({Key? key}) : super(key: key);
+  const CharactersDetailsScreen({Key? key, required this.character})
+      : super(key: key);
+  final Character character;
 
   @override
-  State<CharactersDetailsScreen> createState() => _CharactersDetailsScreenState();
+  State<CharactersDetailsScreen> createState() =>
+      _CharactersDetailsScreenState();
 }
 
 class _CharactersDetailsScreenState extends State<CharactersDetailsScreen> {
