@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../Bloc/cubit.dart';
 import '../Bloc/states.dart';
 import '../constants/colors.dart';
@@ -20,7 +19,7 @@ class _CharactersScreenState extends State<CharactersScreen> {
   @override
   void initState() {
     super.initState();
-    allCharacters = BlocProvider.of<CubitApp>(context).getAllCharacters();
+    BlocProvider.of<CubitApp>(context).getAllCharacterss();
   }
 
   @override
@@ -44,20 +43,19 @@ class _CharactersScreenState extends State<CharactersScreen> {
         child: Column(
           children: [
             GridView.builder(
-              physics: ClampingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               shrinkWrap: true,
               itemCount: allCharacters.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 2 / 3,
                 crossAxisSpacing: 1,
                 mainAxisSpacing: 1,
+                childAspectRatio: 2 / 3,
               ),
               itemBuilder: (context, index) {
                 return CharactersItem(
-                  character:allCharacters[index] ,
+                  character: allCharacters[index],
                 );
-
               },
             )
           ],
