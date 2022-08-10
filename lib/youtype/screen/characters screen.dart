@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import '../Bloc/cubit.dart';
 import '../Bloc/states.dart';
 import '../constants/colors.dart';
@@ -128,15 +129,51 @@ class _CharactersScreenState extends State<CharactersScreen> {
         title: isSearch ? builtAppBarSearchFiled() : builtAppBarTitle(),
         actions: _builtAppBarAction(),
       ),
-      body: BlocBuilder<CubitApp, StatesApp>(
-        builder: (context, state) {
-          if (state is CharactersLoaded) {
-            allCharacters = state.listCharacters;
-            return listCharacters();
+      body: OfflineBuilder(
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          final bool connected = connectivity != ConnectivityResult.none;
+          if (connected) {
+            return BlocBuilder<CubitApp, StatesApp>(
+              builder: (context, state) {
+                if (state is CharactersLoaded) {
+                  allCharacters = state.listCharacters;
+                  return listCharacters();
+                } else {
+                  return showLoadingIndicator();
+                }
+              },
+            );
           } else {
-            return showLoadingIndicator();
+            return buildNoInternetWidget();
           }
         },
+        child: showLoadingIndicator(),
+      ),
+    );
+  }
+
+  Widget buildNoInternetWidget() {
+    return Center(
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            const Text(
+              'Can\'t connect .. check internet',
+              style: TextStyle(
+                fontSize: 22,
+                color: MyColors.grey,
+              ),
+            ),
+            Image.asset('assets/images/no_internet.png')
+          ],
+        ),
       ),
     );
   }
