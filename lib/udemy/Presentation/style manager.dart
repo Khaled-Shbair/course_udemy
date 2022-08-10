@@ -1,5 +1,6 @@
-import 'package:course_udemy/Presentation/fonts%20manager.dart';
 import 'package:flutter/material.dart';
+
+import 'fonts manager.dart';
 
 class StyleManager {
   // private method

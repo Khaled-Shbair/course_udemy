@@ -1,9 +1,9 @@
-import 'package:course_udemy/bloc/state.dart';
-import 'package:course_udemy/screens/science%20screen.dart';
+import 'package:course_udemy/udemy/bloc/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../screens/business screen.dart';
+import '../screens/science screen.dart';
 import '../screens/settings screen.dart';
 import '../screens/sports screen.dart';
 
@@ -41,5 +41,4 @@ class Events extends Cubit<States> {
     currentIndex = index;
     emit(NewBottomNavState());
   }
-  
 }

@@ -1,6 +1,6 @@
+import 'package:course_udemy/udemy/screens/news%20layout.dart';
 import 'package:flutter/material.dart';
 
-import 'screens/news layout.dart';
 
 void main() {
   runApp(const MyApp());
